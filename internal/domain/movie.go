@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"database/sql/driver"
 	"errors"
+	"fmt"
 	"net/url"
 	"regexp"
 	"time"
@@ -32,14 +34,11 @@ const (
 	Family      Genre = "Family"
 	Fantasy     Genre = "Fantasy"
 	FilmNoir    Genre = "Film Noir"
-	GameShow    Genre = "Game Show"
 	History     Genre = "History"
 	Horror      Genre = "Horror"
 	Musical     Genre = "Musical"
 	Music       Genre = "Music"
 	Mystery     Genre = "Mystery"
-	News        Genre = "News"
-	RealityTV   Genre = "Reality-TV"
 	Romance     Genre = "Romance"
 	SciFi       Genre = "Sci-Fi"
 	Short       Genre = "Short"
@@ -88,4 +87,20 @@ func isValidURL(u string) bool {
 		return false
 	}
 	return urlRegex.MatchString(u)
+}
+
+func (g *Genre) Scan(src any) error {
+	switch v := src.(type) {
+	case []byte:
+		*g = Genre(v)
+	case string:
+		*g = Genre(v)
+	default:
+		return fmt.Errorf("cannot scan %T into Genre", src)
+	}
+	return nil
+}
+
+func (g Genre) Value() (driver.Value, error) {
+	return string(g), nil
 }

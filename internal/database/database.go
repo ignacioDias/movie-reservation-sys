@@ -17,3 +17,4 @@ func NewDatabase(db *sqlx.DB) *Database {
 		AuditoriumRepo: NewAuditoriumRepository(db),
 	}
 }
+
