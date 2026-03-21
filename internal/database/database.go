@@ -8,6 +8,7 @@ type Database struct {
 	UserRepo       *UserRepository
 	AuditoriumRepo *AuditoriumRepository
 	MovieRepo      *MovieRepository
+	ProjectionRepo *ProjectionRepository
 }
 
 func NewDatabase(db *sqlx.DB) *Database {
@@ -17,5 +18,6 @@ func NewDatabase(db *sqlx.DB) *Database {
 		UserRepo:       NewUserRepository(db),
 		AuditoriumRepo: NewAuditoriumRepository(db),
 		MovieRepo:      NewMovieRepository(db),
+		ProjectionRepo: NewProjectionRepository(db),
 	}
 }

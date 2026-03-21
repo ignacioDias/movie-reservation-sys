@@ -58,6 +58,13 @@ func (mr *MovieRepository) GetMoviesByTitle(ctx context.Context, title string) (
 	return mr.getMovies(err, rows)
 }
 
+func (mr *MovieRepository) GetNowShowingMovies(ctx context.Context) ([]domain.Movie, error) {
+	query := ` SELECT DISTINCT m.movie_id, m.title, m.description, m.poster_image_url, m.trailer_url, m.genres, m.release_date
+		FROM movies m INNER JOIN projections p ON m.movie_id = p.movie_id WHERE p.starts_at > NOW()`
+	rows, err := mr.db.QueryContext(ctx, query)
+	return mr.getMovies(err, rows)
+}
+
 func (mr *MovieRepository) getMovies(err error, rows *sql.Rows) ([]domain.Movie, error) {
 	if err != nil {
 		return nil, err
