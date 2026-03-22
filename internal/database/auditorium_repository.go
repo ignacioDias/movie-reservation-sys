@@ -36,6 +36,15 @@ func (ar *AuditoriumRepository) GetAuditoriumByID(ctx context.Context, auditoriu
 	return &auditorium, nil
 }
 
+func (ar *AuditoriumRepository) GetAllAuditoriums(ctx context.Context) ([]domain.Auditorium, error) {
+	query := `SELECT * FROM auditoriums`
+	var auditoriums []domain.Auditorium
+	if err := ar.db.SelectContext(ctx, &auditoriums, query); err != nil {
+		return nil, err
+	}
+	return auditoriums, nil
+}
+
 func (ar *AuditoriumRepository) UpdateAuditorium(ctx context.Context, auditorium *domain.Auditorium) error {
 	query := `UPDATE auditoriums SET name = $1, cant_rows = $2, cant_cols = $3 WHERE auditorium_id = $4`
 	result, err := ar.db.ExecContext(ctx, query, auditorium.Name, auditorium.CantRows, auditorium.CantCols, auditorium.AuditoriumID)
