@@ -6,8 +6,8 @@ type Reservation struct {
 	ReservationID int64    `db:"reservation_id" json:"reservationId"`
 	UserID        int64    `db:"user_id" json:"userId"`
 	ProjectionID  int64    `db:"projection_id" json:"projectionId"`
-	Seats         []Seat   `db:"seats" json:"seats"`
-	Tickets       []Ticket `db:"tickets" json:"tickets"`
+	Seats         []Seat   `json:"seats"`
+	Tickets       []Ticket `json:"tickets"`
 }
 
 type Seat struct {
