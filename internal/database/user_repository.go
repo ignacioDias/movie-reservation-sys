@@ -26,8 +26,17 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user *domain.User) err
 
 func (ur *UserRepository) GetUserByID(ctx context.Context, userID int64) (*domain.User, error) {
 	query := `SELECT * FROM users WHERE user_id = $1`
+	return ur.getUserByArg(ctx, query, userID)
+}
+
+func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+	query := `SELECT * FROM users WHERE email = $1`
+	return ur.getUserByArg(ctx, query, email)
+}
+
+func (ur *UserRepository) getUserByArg(ctx context.Context, query string, arg any) (*domain.User, error) {
 	var user domain.User
-	if err := ur.db.GetContext(ctx, &user, query, userID); err != nil {
+	if err := ur.db.GetContext(ctx, &user, query, arg); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrUserNotFound
 		}
