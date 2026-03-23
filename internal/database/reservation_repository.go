@@ -29,8 +29,8 @@ func (rr *ReservationRepository) CreateReservation(ctx context.Context, reservat
 		return err
 	}
 	for _, seat := range reservation.Seats {
-		query := `INSERT INTO reservation_seats (reservation_id, row, col) VALUES ($1, $2, $3)`
-		if _, err := tx.ExecContext(ctx, query, reservation.ReservationID, seat.Row, seat.Col); err != nil {
+		query := `INSERT INTO reservation_seats (reservation_id, projection_id, row, col) VALUES ($1, $2, $3, $4)`
+		if _, err := tx.ExecContext(ctx, query, reservation.ReservationID, reservation.ProjectionID, seat.Row, seat.Col); err != nil {
 			return err
 		}
 	}
@@ -44,21 +44,12 @@ func (rr *ReservationRepository) CreateReservation(ctx context.Context, reservat
 }
 
 func (rr *ReservationRepository) GetAllUnavailableSeatsFromProjection(ctx context.Context, projectionID int64) ([]domain.Seat, error) {
-	query := `SELECT rs.row, rs.col 
-          FROM reservation_seats rs 
-          INNER JOIN reservations r ON rs.reservation_id = r.reservation_id 
-          WHERE r.projection_id = $1`
+	query := `SELECT row, col FROM reservation_seats WHERE projection_id = $1`
 	var seats []domain.Seat
 	if err := rr.db.SelectContext(ctx, &seats, query, projectionID); err != nil {
 		return nil, err
 	}
 	return seats, nil
-}
-
-func (rr *ReservationRepository) UpdateReservationSeat(ctx context.Context, reservationID int64, newSeat *domain.Seat, oldSeat *domain.Seat) error {
-	query := `UPDATE reservation_seats SET row = $1, col = $2 WHERE reservation_id = $3 AND row = $4 AND col = $5`
-	result, err := rr.db.ExecContext(ctx, query, newSeat.Row, newSeat.Col, reservationID, oldSeat.Row, oldSeat.Col)
-	return CheckErrResult(result, err, ErrReservationNotFound)
 }
 
 func (rr *ReservationRepository) DeleteReservation(ctx context.Context, reservationID int64) error {
