@@ -25,6 +25,12 @@ type TicketUpdateRequest struct {
 	CantSeats *int     `json:"cant_seats"`
 }
 
+func NewTicketHandler(ticketRepo *database.TicketRepository) *TicketHandler {
+	return &TicketHandler{
+		ticketRepo: ticketRepo,
+	}
+}
+
 func (th *TicketHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 	var tickerReq TicketRequest
 	if err := json.NewDecoder(r.Body).Decode(&tickerReq); err != nil {

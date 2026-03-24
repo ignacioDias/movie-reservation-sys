@@ -49,6 +49,34 @@ const (
 	Western     Genre = "Western"
 )
 
+var validGenres = map[Genre]struct{}{
+	Action:      {},
+	Adult:       {},
+	Adventure:   {},
+	Animation:   {},
+	Biography:   {},
+	Comedy:      {},
+	Crime:       {},
+	Documentary: {},
+	Drama:       {},
+	Family:      {},
+	Fantasy:     {},
+	FilmNoir:    {},
+	History:     {},
+	Horror:      {},
+	Musical:     {},
+	Music:       {},
+	Mystery:     {},
+	Romance:     {},
+	SciFi:       {},
+	Short:       {},
+	Sport:       {},
+	TalkShow:    {},
+	Thriller:    {},
+	War:         {},
+	Western:     {},
+}
+
 func NewMovie(title, description, posterImageURL string, genres []Genre, trailer string, releaseDate time.Time) (*Movie, error) {
 	if title == "" {
 		return nil, errors.New("title is required")
@@ -59,10 +87,13 @@ func NewMovie(title, description, posterImageURL string, genres []Genre, trailer
 	if len(genres) == 0 {
 		return nil, errors.New("Genres are required")
 	}
-	if !isValidURL(posterImageURL) {
+	if !AreValidGenres(genres) {
+		return nil, errors.New("invalid genres")
+	}
+	if !IsValidURL(posterImageURL) {
 		return nil, errors.New("Invalid poster image")
 	}
-	if !isValidURL(trailer) {
+	if !IsValidURL(trailer) {
 		return nil, errors.New("Invalid trailer")
 	}
 	return &Movie{
@@ -70,11 +101,26 @@ func NewMovie(title, description, posterImageURL string, genres []Genre, trailer
 		Description:    description,
 		PosterImageURL: posterImageURL,
 		Genres:         genres,
+		TrailerURL:     trailer,
 		ReleaseDate:    releaseDate,
 	}, nil
 }
 
-func isValidURL(u string) bool {
+func IsValidGenre(g Genre) bool {
+	_, ok := validGenres[g]
+	return ok
+}
+
+func AreValidGenres(genres []Genre) bool {
+	for _, genre := range genres {
+		if !IsValidGenre(genre) {
+			return false
+		}
+	}
+	return true
+}
+
+func IsValidURL(u string) bool {
 	var urlRegex = regexp.MustCompile(`^(https?://)([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(/[^\s]*)?$`)
 	parsed, err := url.Parse(u)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"cinemasys/internal/middleware"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -19,8 +20,8 @@ type UserHandler struct {
 type UserRegisterRequest struct {
 	Email          string `json:"email"`
 	Password       string `json:"password"`
-	DocumentNumber string `db:"document_number" json:"documentNumber"`
-	ProfilePicture string `db:"profile_picture" json:"profilePicture"`
+	DocumentNumber string `json:"documentNumber"`
+	ProfilePicture string `json:"profilePicture"`
 }
 
 type UpdateUserRequest struct {
@@ -97,7 +98,9 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		Expires:  session.ExpiresAt,
 	})
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("LoginUser: failed to encode response: %v", err)
+	}
 }
 func (uh *UserHandler) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r)
@@ -141,18 +144,21 @@ func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("GetUser: failed to encode response: %v", err)
+	}
 }
 
 func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	user, err := uh.getUserFromPath(r)
-	if err != nil {
-		writeUserError(w, err)
-		return
-	}
 	var req UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "wrong format for update user", http.StatusBadRequest)
+		return
+	}
+	user, err := uh.getUserFromPath(r)
+	if err != nil {
+		writeUserError(w, err)
 		return
 	}
 	if req.Email != nil {
@@ -193,7 +199,11 @@ func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("UpdateUser: failed to encode response: %v", err)
+	}
+
 }
 
 func (uh *UserHandler) getUserFromPath(r *http.Request) (*domain.User, error) {
@@ -227,6 +237,23 @@ func (uh *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		http.Error(w, "invalid user id", http.StatusBadRequest)
+		return
+	}
+	if err := uh.userRepo.DeleteUser(r.Context(), userID); err != nil {
+		if errors.Is(err, database.ErrUserNotFound) {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Error while deleting user", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (uh *UserHandler) DeleteMe(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 	if err := uh.userRepo.DeleteUser(r.Context(), userID); err != nil {
