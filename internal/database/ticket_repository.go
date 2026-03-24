@@ -3,6 +3,7 @@ package database
 import (
 	"cinemasys/internal/domain"
 	"context"
+	"database/sql"
 	"errors"
 
 	"github.com/jmoiron/sqlx"
@@ -21,6 +22,18 @@ var ErrTicketNotFound = errors.New("Ticket not found")
 func (tr *TicketRepository) CreateTicket(ctx context.Context, ticket *domain.Ticket) error {
 	query := `INSERT INTO tickets (name, price, cant_seats) VALUES ($1, $2, $3) RETURNING ticket_id`
 	return tr.db.QueryRowContext(ctx, query, ticket.Name, ticket.Price, ticket.CantSeats).Scan(&ticket.TicketID)
+}
+
+func (tr *TicketRepository) GetTicketByID(ctx context.Context, ticketID int64) (*domain.Ticket, error) {
+	query := `SELECT * FROM tickets WHERE ticket_id = $1`
+	var ticket domain.Ticket
+	if err := tr.db.GetContext(ctx, &ticket, query, ticketID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrTicketNotFound
+		}
+		return nil, err
+	}
+	return &ticket, nil
 }
 
 func (tr *TicketRepository) GetAllTickets(ctx context.Context) ([]domain.Ticket, error) {

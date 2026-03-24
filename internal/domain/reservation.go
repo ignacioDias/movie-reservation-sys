@@ -22,6 +22,20 @@ type Ticket struct {
 	CantSeats int     `db:"cant_seats" json:"cant_seats"`
 }
 
+func NewTicket(name string, price float64, cantSeats int) (*Ticket, error) {
+	if price < 0 {
+		return nil, errors.New("Invalid price")
+	}
+	if cantSeats <= 0 {
+		return nil, errors.New("invalid cant seats")
+	}
+	return &Ticket{
+		Name:      name,
+		Price:     price,
+		CantSeats: cantSeats,
+	}, nil
+}
+
 func NewReservation(userID, projectionID int64, seats []Seat, tickets []Ticket) (*Reservation, error) {
 	if len(seats) != actualCantSeats(tickets) {
 		return nil, errors.New("Invalid seats quantity")

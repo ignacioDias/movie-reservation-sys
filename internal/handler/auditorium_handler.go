@@ -10,6 +10,11 @@ import (
 	"strconv"
 )
 
+type AuditoriumRequest struct {
+	CantRows int    `json:"cantRows"`
+	CantCols int    `json:"cantCols"`
+	Name     string `json:"name"`
+}
 type AuditoriumUpdateRequest struct {
 	CantRows *int    `json:"cantRows"`
 	CantCols *int    `json:"cantCols"`
@@ -25,19 +30,20 @@ func NewAuditoriumHandler(repo *database.AuditoriumRepository) *AuditoriumHandle
 }
 
 func (ah *AuditoriumHandler) CreateAuditorium(w http.ResponseWriter, r *http.Request) {
-	var auditorium domain.Auditorium
-	if err := json.NewDecoder(r.Body).Decode(&auditorium); err != nil {
+	var auditoriumReq AuditoriumRequest
+	if err := json.NewDecoder(r.Body).Decode(&auditoriumReq); err != nil {
 		http.Error(w, "Wrong format for auditorium", http.StatusBadRequest)
 		return
 	}
-	if err := ah.auditoriumRepo.CreateAuditorium(r.Context(), &auditorium); err != nil {
+	auditorium := domain.NewAuditorium(auditoriumReq.CantRows, auditoriumReq.CantCols, auditoriumReq.Name)
+	if err := ah.auditoriumRepo.CreateAuditorium(r.Context(), auditorium); err != nil {
 		http.Error(w, "error while creating auditorium", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(auditorium); err != nil {
-		log.Printf("Create Auditorium: failed to encode response: %v", err)
+	if err := json.NewEncoder(w).Encode(*auditorium); err != nil {
+		log.Printf("Create auditorium: failed to encode response: %v", err)
 	}
 
 }
@@ -83,7 +89,11 @@ func (ah *AuditoriumHandler) UpdateAuditorium(w http.ResponseWriter, r *http.Req
 		http.Error(w, "error while updating auditorium", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(auditorium); err != nil {
+		log.Printf("updateAuditorium: failed to encode response: %v", err)
+	}
 }
 
 func (ah *AuditoriumHandler) getAuditoriumFromPath(r *http.Request) (*domain.Auditorium, error) {
