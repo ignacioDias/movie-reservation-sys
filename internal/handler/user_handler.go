@@ -25,8 +25,8 @@ type UserRegisterRequest struct {
 
 type UpdateUserRequest struct {
 	Email          *string `json:"email"`
-	DocumentNumber *string `db:"document_number" json:"documentNumber"`
-	ProfilePicture *string `db:"profile_picture" json:"profilePicture"`
+	DocumentNumber *string `json:"documentNumber"`
+	ProfilePicture *string `json:"profilePicture"`
 	Password       *string `json:"password"`
 }
 
