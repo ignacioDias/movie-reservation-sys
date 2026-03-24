@@ -27,18 +27,22 @@ const (
 	USER Role = iota
 	ADMIN
 )
+const defaultProfilePicture = "/assets/avatars/batman.webp"
 
 func NewUser(email string, password string, documentNumber string, role Role, profilePicture string) (*User, error) {
 	if !IsValidEmail(email) {
 		return nil, ErrInvalidEmail
 	}
-	if !isValidPassword(password) {
+	if !IsValidPassword(password) {
 		return nil, ErrInvalidPassword
+	}
+	if !IsValidProfilePicture(profilePicture) {
+		profilePicture = defaultProfilePicture
 	}
 	if documentNumber == "" {
 		return nil, ErrEmptyDNI
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	hashedPassword, err := HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +60,7 @@ func IsValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
-func isValidPassword(password string) bool {
+func IsValidPassword(password string) bool {
 	if len(password) < 8 || len(password) >= 32 {
 		return false
 	}
@@ -77,6 +81,25 @@ func isValidPassword(password string) bool {
 	}
 
 	return hasUpper && hasLower && hasDigit && hasSpecial
+}
+
+func HashPassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), 14)
+}
+
+func IsValidProfilePicture(pp string) bool {
+	validAvatars := map[string]bool{
+		"/assets/avatars/batman.webp":    true,
+		"/assets/avatars/joker.webp":     true,
+		"/assets/avatars/spiderman.webp": true,
+		"/assets/avatars/dune.webp":      true,
+		"/assets/avatars/deniro.webp":    true,
+		"/assets/avatars/dicaprio.webp":  true,
+		"/assets/avatars/maverick.webp":  true,
+		"/assets/avatars/samuel.webp":    true,
+		"/assets/avatars/travolta.webp":  true,
+	}
+	return validAvatars[pp]
 }
 
 func (u *User) ComparePasswords(password string) bool {
