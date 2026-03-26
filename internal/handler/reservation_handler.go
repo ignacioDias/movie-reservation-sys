@@ -19,6 +19,10 @@ type ReservationRequest struct {
 	Tickets      []domain.Ticket `json:"tickets"`
 }
 
+func NewReservationHandler(repo *database.ReservationRepository) *ReservationHandler {
+	return &ReservationHandler{reservationRepo: repo}
+}
+
 func (rh *ReservationHandler) CreateReservation(w http.ResponseWriter, r *http.Request) {
 	var reservationReq ReservationRequest
 	if err := json.NewDecoder(r.Body).Decode(&reservationReq); err != nil {
@@ -63,3 +67,5 @@ func (rh *ReservationHandler) GetReservationsFromUser(w http.ResponseWriter, r *
 		log.Printf("GetReservations: failed to encode response: %v", err)
 	}
 }
+
+//TODO: delete reservation
