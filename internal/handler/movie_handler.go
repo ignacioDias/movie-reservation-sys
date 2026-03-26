@@ -32,6 +32,9 @@ type MovieUpdateRequest struct {
 	ReleaseDate    *time.Time     `json:"releaseDate"`
 }
 
+const defaultLimit = 20
+const defaultOffset = 0
+
 func NewMovieHandler(movieRepo *database.MovieRepository) *MovieHandler {
 	return &MovieHandler{
 		movieRepo: movieRepo,
@@ -81,6 +84,38 @@ func (mh *MovieHandler) GetMovieByID(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(movie); err != nil {
 		log.Printf("GetMovieByID: failed to encode response: %v", err)
 	}
+}
+
+func (mh *MovieHandler) GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	limit, err := parseQueryInt(r, "limit", defaultLimit)
+	if err != nil {
+		http.Error(w, "invalid format for limit ", http.StatusBadRequest)
+		return
+	}
+	offset, err := parseQueryInt(r, "offset", defaultOffset)
+	if err != nil {
+		http.Error(w, "invalid format for offset ", http.StatusBadRequest)
+		return
+	}
+	movies, err := mh.movieRepo.GetAllMovies(r.Context(), limit, offset)
+	if err != nil {
+		http.Error(w, "error getting movies", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(movies); err != nil {
+		log.Printf("GetAllMovies: failed to encode response: %v", err)
+	}
+}
+
+func parseQueryInt(r *http.Request, key string, defaultValue int) (int, error) {
+	val := r.URL.Query().Get(key)
+	if val == "" {
+		return defaultValue, nil
+	}
+	return strconv.Atoi(val)
 }
 
 func (mh *MovieHandler) GetMoviesWithProjections(w http.ResponseWriter, r *http.Request) {

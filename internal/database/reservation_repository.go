@@ -43,6 +43,32 @@ func (rr *ReservationRepository) CreateReservation(ctx context.Context, reservat
 	return tx.Commit()
 }
 
+func (rr *ReservationRepository) GetReservationsPerUser(ctx context.Context, userID int64) ([]domain.Reservation, error) {
+	query := `SELECT * FROM reservations WHERE user_id = $1`
+	querySeats := `SELECT row, col FROM reservation_seats WHERE reservation_id = $1`
+	queryTickets := `
+		SELECT t.ticket_id, t.name, t.price, t.cant_seats
+		FROM tickets t
+		INNER JOIN reservation_tickets rt ON t.ticket_id = rt.ticket_id
+		WHERE rt.reservation_id = $1`
+
+	var reservations []domain.Reservation
+	if err := rr.db.SelectContext(ctx, &reservations, query, userID); err != nil {
+		return nil, err
+	}
+
+	for i := range reservations {
+		if err := rr.db.SelectContext(ctx, &reservations[i].Seats, querySeats, reservations[i].ReservationID); err != nil {
+			return nil, err
+		}
+		if err := rr.db.SelectContext(ctx, &reservations[i].Tickets, queryTickets, reservations[i].ReservationID); err != nil {
+			return nil, err
+		}
+	}
+
+	return reservations, nil
+}
+
 func (rr *ReservationRepository) GetAllUnavailableSeatsFromProjection(ctx context.Context, projectionID int64) ([]domain.Seat, error) {
 	query := `SELECT row, col FROM reservation_seats WHERE projection_id = $1`
 	var seats []domain.Seat
@@ -50,10 +76,4 @@ func (rr *ReservationRepository) GetAllUnavailableSeatsFromProjection(ctx contex
 		return nil, err
 	}
 	return seats, nil
-}
-
-func (rr *ReservationRepository) DeleteReservation(ctx context.Context, reservationID int64) error {
-	query := `DELETE FROM reservations WHERE reservation_id = $1`
-	result, err := rr.db.ExecContext(ctx, query, reservationID)
-	return CheckErrResult(result, err, ErrReservationNotFound)
 }
