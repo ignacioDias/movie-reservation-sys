@@ -143,3 +143,31 @@ func (d *Database) InitDB() error {
 
 	return nil
 }
+
+func (d *Database) Clear() error {
+	clearProjections := `DELETE FROM projections WHERE starts_at < NOW()`
+	clearSessions := `DELETE FROM sessions WHERE expires_at < NOW()`
+
+	tx, err := d.DB.Beginx()
+	if err != nil {
+		return fmt.Errorf("begin clear transaction: %w", err)
+	}
+
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if _, err := tx.Exec(clearProjections); err != nil {
+		return fmt.Errorf("clear projections: %w", err)
+	}
+
+	if _, err := tx.Exec(clearSessions); err != nil {
+		return fmt.Errorf("clear sessions: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit clear transaction: %w", err)
+	}
+
+	return nil
+}
