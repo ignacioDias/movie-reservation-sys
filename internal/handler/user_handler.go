@@ -137,16 +137,21 @@ func (uh *UserHandler) MakeUserAdmin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	user, err := uh.getUserFromPath(r)
+func (uh *UserHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	user, err := uh.userRepo.GetUserByID(r.Context(), userID)
 	if err != nil {
-		writeUserError(w, err)
+		http.Error(w, "error getting user", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(user); err != nil {
-		log.Printf("GetUser: failed to encode response: %v", err)
+		log.Printf("GetCurrentUser: failed to encode response: %v", err)
 	}
 }
 
