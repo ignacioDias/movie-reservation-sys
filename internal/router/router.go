@@ -47,6 +47,7 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 
 	//user
 	r.mux.HandleFunc("GET /api/v1/users/me", r.authenticationMw.AuthenticationMiddleware(r.userHandler.GetCurrentUser))
+	r.mux.HandleFunc("PUT /api/v1/users/{user_id}/admin", r.authCheck((r.userHandler.MakeUserAdmin)))
 	r.mux.HandleFunc("DELETE /api/v1/users/me", r.authenticationMw.AuthenticationMiddleware(r.userHandler.DeleteMe))
 	r.mux.HandleFunc("DELETE /api/v1/users/{user_id}", r.authCheck(r.userHandler.DeleteUser))
 
