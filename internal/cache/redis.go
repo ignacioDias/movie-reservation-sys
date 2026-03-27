@@ -28,9 +28,6 @@ func NewCache(addr string) *Cache {
 
 func (c *Cache) Get(key string, dest any) error {
 	val, err := c.client.Get(c.ctx, key).Result()
-	if err == redis.Nil {
-		return nil // key does not exist
-	}
 	if err != nil {
 		return err
 	}
