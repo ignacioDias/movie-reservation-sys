@@ -4,28 +4,49 @@ import (
 	"cinemasys/internal/database"
 	"cinemasys/internal/router"
 	"cinemasys/internal/server"
+	"log"
 	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/joho/godotenv"
-
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	godotenv.Load()
-	// redisClient := database.NewRedisClient(os.Getenv("REDIS_URL"))
-	db, err := sqlx.Connect("pgx", os.Getenv("DATABASE_URL"))
+	_ = godotenv.Load()
+
+	dbURL := getEnv("DATABASE_URL", "postgres://cinemasys:secretpassword@localhost:5432/cinemasys?sslmode=disable")
+	port := getEnv("PORT", "8080")
+
+	db, err := sqlx.Connect("pgx", dbURL)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Failed to ping database: %v", err)
+	}
+	log.Println("Successfully connected to PostgreSQL")
+
 	database := database.NewDatabase(db)
 	if err := database.InitDB(); err != nil {
-		panic(err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
+	log.Println("Database initialized successfully")
 
 	router := router.NewRouter(database)
+	srv := server.NewServer(port, router)
 
-	server := server.NewServer(os.Getenv("PORT"), router)
-	server.Initialize()
+	log.Printf("Starting server on port %s", port)
+	if err := srv.Initialize(); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }

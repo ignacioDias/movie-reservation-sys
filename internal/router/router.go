@@ -21,6 +21,8 @@ type Router struct {
 }
 
 func NewRouter(db *database.Database) *Router {
+	// redisClient := database.NewRedisClient(os.Getenv("REDIS_URL"))
+
 	return &Router{
 		mux:                http.NewServeMux(),
 		userHandler:        handler.NewUserHandler(db.UserRepo, db.SessionRepo),

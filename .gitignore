@@ -1,2 +1,15 @@
+# Binary
+cinemasys
+
+# Environment
 .env
+*.env
+
+# Temp
+tmp/
+
+# Go
+*.test
+*.out
+
 todo.txt

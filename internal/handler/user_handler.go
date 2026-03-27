@@ -60,7 +60,11 @@ func (uh *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(&user); err != nil {
+		log.Printf("RegisterUser: failed to encode response: %v", err)
+	}
 }
 
 func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {

@@ -10,7 +10,7 @@ import (
 
 var ErrInvalidEmail error = errors.New("Invalid email")
 var ErrInvalidPassword error = errors.New("Invalid password")
-var ErrEmptyDNI error = errors.New("Empty DNI")
+var ErrEmptyDocumentNumber error = errors.New("Empty documentNumber")
 
 type User struct {
 	Email          string `db:"email" json:"email"`
@@ -40,7 +40,7 @@ func NewUser(email string, password string, documentNumber string, role Role, pr
 		profilePicture = defaultProfilePicture
 	}
 	if documentNumber == "" {
-		return nil, ErrEmptyDNI
+		return nil, ErrEmptyDocumentNumber
 	}
 	hashedPassword, err := HashPassword(password)
 	if err != nil {
