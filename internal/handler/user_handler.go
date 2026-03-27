@@ -6,7 +6,6 @@ import (
 	"cinemasys/internal/middleware"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -60,11 +59,8 @@ func (uh *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(&user); err != nil {
-		log.Printf("RegisterUser: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, user, http.StatusCreated)
+
 }
 
 func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
@@ -101,10 +97,8 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteStrictMode,
 		Expires:  session.ExpiresAt,
 	})
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		log.Printf("LoginUser: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, user, http.StatusOK)
+
 }
 func (uh *UserHandler) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r)
@@ -152,11 +146,7 @@ func (uh *UserHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error getting user", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		log.Printf("GetCurrentUser: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, user, http.StatusOK)
 }
 
 func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -207,12 +197,7 @@ func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error updating user", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		log.Printf("UpdateUser: failed to encode response: %v", err)
-	}
-
+	WriteResponseWithEncoder(w, user, http.StatusOK)
 }
 
 func (uh *UserHandler) getUserFromPath(r *http.Request) (*domain.User, error) {

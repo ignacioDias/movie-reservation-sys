@@ -5,7 +5,6 @@ import (
 	"cinemasys/internal/domain"
 	"cinemasys/internal/middleware"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -43,11 +42,7 @@ func (rh *ReservationHandler) CreateReservation(w http.ResponseWriter, r *http.R
 		http.Error(w, "error while creating reservation", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(reservation); err != nil {
-		log.Printf("CreateReservation: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, reservation, http.StatusCreated)
 }
 
 func (rh *ReservationHandler) GetReservationsFromUser(w http.ResponseWriter, r *http.Request) {
@@ -61,11 +56,7 @@ func (rh *ReservationHandler) GetReservationsFromUser(w http.ResponseWriter, r *
 		http.Error(w, "error getting reservations", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(reservations); err != nil {
-		log.Printf("GetReservations: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, reservations, http.StatusOK)
 }
 
 //TODO: delete reservation

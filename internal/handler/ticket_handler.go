@@ -5,7 +5,6 @@ import (
 	"cinemasys/internal/domain"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -46,11 +45,7 @@ func (th *TicketHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error creating ticket", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(ticket); err != nil {
-		log.Printf("CreateTicket: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, ticket, http.StatusCreated)
 }
 
 func (th *TicketHandler) GetAllTickets(w http.ResponseWriter, r *http.Request) {
@@ -59,11 +54,7 @@ func (th *TicketHandler) GetAllTickets(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error getting tickets", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(tickets); err != nil {
-		log.Printf("GetAllTickets: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, tickets, http.StatusOK)
 }
 
 func (th *TicketHandler) UpdateTicket(w http.ResponseWriter, r *http.Request) {
@@ -116,11 +107,7 @@ func (th *TicketHandler) UpdateTicket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error updating ticket", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(ticket); err != nil {
-		log.Printf("updateTicket: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, ticket, http.StatusOK)
 }
 
 func (th *TicketHandler) DeleteTicket(w http.ResponseWriter, r *http.Request) {

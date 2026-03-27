@@ -5,7 +5,6 @@ import (
 	"cinemasys/internal/domain"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -45,11 +44,7 @@ func (ph *ProjectionHandler) CreateProjection(w http.ResponseWriter, r *http.Req
 		http.Error(w, "error creating projection", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(projection); err != nil {
-		log.Printf("CreateProjection: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, projection, http.StatusCreated)
 }
 
 func (ph *ProjectionHandler) GetAllProjectionsPerMovie(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +59,7 @@ func (ph *ProjectionHandler) GetAllProjectionsPerMovie(w http.ResponseWriter, r 
 		http.Error(w, "error getting projections", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(projections); err != nil {
-		log.Printf("GetAllProjectionsPerMovie: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, projections, http.StatusOK)
 }
 
 func (ph *ProjectionHandler) GetProjection(w http.ResponseWriter, r *http.Request) {
@@ -87,11 +78,7 @@ func (ph *ProjectionHandler) GetProjection(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "error getting projection", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(projection); err != nil {
-		log.Printf("GetProjection: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, projection, http.StatusOK)
 }
 
 func (ph *ProjectionHandler) DeleteProjection(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +97,7 @@ func (ph *ProjectionHandler) DeleteProjection(w http.ResponseWriter, r *http.Req
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+
 }
 func (ph *ProjectionHandler) UpdateProjection(w http.ResponseWriter, r *http.Request) {
 	var updateReq ProjectionUpdateRequest
@@ -151,9 +139,5 @@ func (ph *ProjectionHandler) UpdateProjection(w http.ResponseWriter, r *http.Req
 		http.Error(w, "error updating projection", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(projection); err != nil {
-		log.Printf("UpdateProjection: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, projection, http.StatusOK)
 }

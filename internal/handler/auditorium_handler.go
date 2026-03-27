@@ -5,7 +5,6 @@ import (
 	"cinemasys/internal/domain"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -40,12 +39,7 @@ func (ah *AuditoriumHandler) CreateAuditorium(w http.ResponseWriter, r *http.Req
 		http.Error(w, "error while creating auditorium", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(*auditorium); err != nil {
-		log.Printf("Create auditorium: failed to encode response: %v", err)
-	}
-
+	WriteResponseWithEncoder(w, auditorium, http.StatusCreated)
 }
 
 func (ah *AuditoriumHandler) GetAuditoriumByID(w http.ResponseWriter, r *http.Request) {
@@ -54,11 +48,7 @@ func (ah *AuditoriumHandler) GetAuditoriumByID(w http.ResponseWriter, r *http.Re
 		writeAuditoriumError(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(auditorium); err != nil {
-		log.Printf("GetAuditoriumByID: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, auditorium, http.StatusOK)
 }
 
 func (ah *AuditoriumHandler) UpdateAuditorium(w http.ResponseWriter, r *http.Request) {
@@ -89,11 +79,7 @@ func (ah *AuditoriumHandler) UpdateAuditorium(w http.ResponseWriter, r *http.Req
 		http.Error(w, "error while updating auditorium", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(auditorium); err != nil {
-		log.Printf("updateAuditorium: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, auditorium, http.StatusOK)
 }
 
 func (ah *AuditoriumHandler) getAuditoriumFromPath(r *http.Request) (*domain.Auditorium, error) {
@@ -128,11 +114,7 @@ func (ah *AuditoriumHandler) GetAuditoriums(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "Error getting auditoriums", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(auditoriums); err != nil {
-		log.Printf("GetAuditoriums: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, auditoriums, http.StatusOK)
 }
 
 func (ah *AuditoriumHandler) DeleteAuditorium(w http.ResponseWriter, r *http.Request) {
