@@ -1,16 +1,20 @@
 package handler
 
 import (
+	"cinemasys/internal/cache"
 	"cinemasys/internal/database"
 	"cinemasys/internal/domain"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type TicketHandler struct {
 	ticketRepo *database.TicketRepository
+	cache      *cache.Cache
 }
 
 type TicketRequest struct {
@@ -24,9 +28,10 @@ type TicketUpdateRequest struct {
 	CantSeats *int     `json:"cant_seats"`
 }
 
-func NewTicketHandler(ticketRepo *database.TicketRepository) *TicketHandler {
+func NewTicketHandler(ticketRepo *database.TicketRepository, cache *cache.Cache) *TicketHandler {
 	return &TicketHandler{
 		ticketRepo: ticketRepo,
+		cache:      cache,
 	}
 }
 
@@ -45,14 +50,23 @@ func (th *TicketHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error creating ticket", http.StatusInternalServerError)
 		return
 	}
+	if err := th.cache.Delete("tickets"); err != nil {
+		log.Printf("CreateTickets: failed to invalidate tickets cache: %v", err)
+	}
 	WriteResponseWithEncoder(w, ticket, http.StatusCreated)
 }
 
 func (th *TicketHandler) GetAllTickets(w http.ResponseWriter, r *http.Request) {
-	tickets, err := th.ticketRepo.GetAllTickets(r.Context())
-	if err != nil {
-		http.Error(w, "error getting tickets", http.StatusInternalServerError)
-		return
+	var tickets []domain.Ticket
+	if err := th.cache.Get("tickets", &tickets); err != nil {
+		tickets, err = th.ticketRepo.GetAllTickets(r.Context())
+		if err != nil {
+			http.Error(w, "error getting tickets", http.StatusInternalServerError)
+			return
+		}
+		if err := th.cache.Set("tickets", tickets, time.Hour); err != nil {
+			log.Printf("GetAllTickets: failed to cache tickets: %v", err)
+		}
 	}
 	WriteResponseWithEncoder(w, tickets, http.StatusOK)
 }
@@ -107,6 +121,9 @@ func (th *TicketHandler) UpdateTicket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error updating ticket", http.StatusInternalServerError)
 		return
 	}
+	if err := th.cache.Delete("tickets"); err != nil {
+		log.Printf("UpdateTickets: failed to invalidate tickets cache: %v", err)
+	}
 	WriteResponseWithEncoder(w, ticket, http.StatusOK)
 }
 
@@ -124,6 +141,9 @@ func (th *TicketHandler) DeleteTicket(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Error(w, "error while deleting ticket", http.StatusInternalServerError)
 		return
+	}
+	if err := th.cache.Delete("tickets"); err != nil {
+		log.Printf("DeleteTickets: failed to invalidate tickets cache: %v", err)
 	}
 	w.WriteHeader(http.StatusNoContent)
 }

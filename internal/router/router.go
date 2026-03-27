@@ -27,7 +27,7 @@ func NewRouter(db *database.Database, cache *cache.Cache) *Router {
 	return &Router{
 		mux:                http.NewServeMux(),
 		userHandler:        handler.NewUserHandler(db.UserRepo, db.SessionRepo),
-		ticketHandler:      handler.NewTicketHandler(db.TicketRepo),
+		ticketHandler:      handler.NewTicketHandler(db.TicketRepo, cache),
 		auditoriumHandler:  handler.NewAuditoriumHandler(db.AuditoriumRepo),
 		projectionHandler:  handler.NewProjectionHandler(db.ProjectionRepo),
 		reservationHandler: handler.NewReservationHandler(db.ReservationRepo),

@@ -7,7 +7,7 @@ A REST API for managing a cinema workflow: users, movies, auditoriums, projectio
 The application is written in Go and uses:
 
 - PostgreSQL for persistent storage
-- Redis for movie-related caching
+- Redis for movie and ticket caching
 - Cookie-based sessions for authentication
 - Role-based authorization for admin-only routes
 
@@ -19,7 +19,7 @@ The application is written in Go and uses:
 - CRUD for movies, auditoriums, projections, and ticket types
 - Reservation creation with seat and ticket validation
 - Pagination support for listing movies
-- Redis cache for selected movie queries
+- Redis cache for selected movie and ticket queries
 - IP-based rate limiting on authentication endpoints
 
 ## Tech Stack
@@ -347,8 +347,14 @@ Redis is used for:
 - `GET /api/v1/movies/{movie_id}`
 - `GET /api/v1/movies/available_now`
 - `GET /api/v1/movies/soon`
+- `GET /api/v1/tickets`
 
-Cache entries are invalidated on movie update and delete operations.
+Cache entries are invalidated on:
+
+- Movie update and delete operations
+- Ticket create, update, and delete operations
+
+Cache TTL is 1 hour for cached movie and ticket list/detail payloads.
 
 ## Common HTTP Status Codes
 
@@ -360,13 +366,3 @@ Cache entries are invalidated on movie update and delete operations.
 - `404 Not Found`
 - `429 Too Many Requests`
 - `500 Internal Server Error`
-
-## Development Notes
-
-- The app uses server-managed sessions, not JWT.
-- Authentication depends on cookie support in your HTTP client.
-- There is no dedicated migration tool; schema is created automatically at startup.
-
-## License
-
-No license file is currently defined in this repository.
