@@ -1,6 +1,7 @@
 package router
 
 import (
+	"cinemasys/internal/cache"
 	"cinemasys/internal/database"
 	"cinemasys/internal/handler"
 	"cinemasys/internal/middleware"
@@ -20,7 +21,7 @@ type Router struct {
 	rateLimit          *middleware.RateLimitMiddleware
 }
 
-func NewRouter(db *database.Database) *Router {
+func NewRouter(db *database.Database, cache *cache.Cache) *Router {
 	// redisClient := database.NewRedisClient(os.Getenv("REDIS_URL"))
 
 	return &Router{
@@ -30,7 +31,7 @@ func NewRouter(db *database.Database) *Router {
 		auditoriumHandler:  handler.NewAuditoriumHandler(db.AuditoriumRepo),
 		projectionHandler:  handler.NewProjectionHandler(db.ProjectionRepo),
 		reservationHandler: handler.NewReservationHandler(db.ReservationRepo),
-		movieHandler:       handler.NewMovieHandler(db.MovieRepo),
+		movieHandler:       handler.NewMovieHandler(db.MovieRepo, cache),
 		authenticationMw:   middleware.NewAuthenticationMiddleware(db.SessionRepo),
 		authorizationMw:    middleware.NewAuthorizationMiddleware(db.UserRepo),
 		rateLimit:          middleware.NewRateLimitMiddleware(),

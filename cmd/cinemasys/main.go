@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cinemasys/internal/cache"
 	"cinemasys/internal/database"
 	"cinemasys/internal/router"
 	"cinemasys/internal/server"
@@ -35,7 +36,13 @@ func main() {
 	}
 	log.Println("Database initialized successfully")
 
-	router := router.NewRouter(database)
+	redisAddr := getEnv("REDIS_ADDR", "localhost:6379")
+	redisClient := cache.NewCache(redisAddr)
+	if err := redisClient.HealthCheck(); err != nil {
+		log.Fatalf("Failed to connect to Redis: %v", err)
+	}
+	defer redisClient.Close()
+	router := router.NewRouter(database, redisClient)
 	srv := server.NewServer(port, router)
 
 	log.Printf("Starting server on port %s", port)

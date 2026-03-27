@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cinemasys/internal/cache"
 	"cinemasys/internal/database"
 	"cinemasys/internal/domain"
 	"encoding/json"
@@ -13,6 +14,7 @@ import (
 
 type MovieHandler struct {
 	movieRepo *database.MovieRepository
+	cache     *cache.Cache
 }
 
 type MovieRequest struct {
@@ -35,8 +37,9 @@ type MovieUpdateRequest struct {
 const defaultLimit = 20
 const defaultOffset = 0
 
-func NewMovieHandler(movieRepo *database.MovieRepository) *MovieHandler {
+func NewMovieHandler(movieRepo *database.MovieRepository, cache *cache.Cache) *MovieHandler {
 	return &MovieHandler{
+		cache:     cache,
 		movieRepo: movieRepo,
 	}
 }
@@ -56,21 +59,22 @@ func (mh *MovieHandler) CreateMovie(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error while creating movie", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(movie); err != nil {
-		log.Printf("CreateMovie: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, movie, http.StatusCreated)
 }
 
 func (mh *MovieHandler) GetMovieByID(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("movie_id")
+	var movie *domain.Movie
+	if err := mh.cache.Get(id, &movie); err == nil {
+		WriteResponseWithEncoder(w, movie, http.StatusOK)
+		return
+	}
 	movieID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		http.Error(w, "wrong movie_id format", http.StatusBadRequest)
 		return
 	}
-	movie, err := mh.movieRepo.GetMovieByID(r.Context(), movieID)
+	movie, err = mh.movieRepo.GetMovieByID(r.Context(), movieID)
 	if err != nil {
 		if errors.Is(err, database.ErrMovieNotFound) {
 			http.Error(w, "movie not found", http.StatusNotFound)
@@ -79,11 +83,10 @@ func (mh *MovieHandler) GetMovieByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error getting movie", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(movie); err != nil {
-		log.Printf("GetMovieByID: failed to encode response: %v", err)
+	if err := mh.cache.Set(id, movie, time.Hour); err != nil {
+		log.Printf("GetMovieByID: failed to cache movie: %v", err)
 	}
+	WriteResponseWithEncoder(w, movie, http.StatusOK)
 }
 
 func (mh *MovieHandler) GetAllMovies(w http.ResponseWriter, r *http.Request) {
@@ -102,12 +105,7 @@ func (mh *MovieHandler) GetAllMovies(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error getting movies", http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(movies); err != nil {
-		log.Printf("GetAllMovies: failed to encode response: %v", err)
-	}
+	WriteResponseWithEncoder(w, movies, http.StatusOK)
 }
 
 func parseQueryInt(r *http.Request, key string, defaultValue int) (int, error) {
@@ -119,29 +117,35 @@ func parseQueryInt(r *http.Request, key string, defaultValue int) (int, error) {
 }
 
 func (mh *MovieHandler) GetMoviesWithProjections(w http.ResponseWriter, r *http.Request) {
-	movies, err := mh.movieRepo.GetNowShowingMovies(r.Context())
-	if err != nil {
-		http.Error(w, "error getting movies", http.StatusInternalServerError)
-		return
+	var movies []domain.Movie
+	if err := mh.cache.Get("currentMovies", &movies); err != nil {
+		movies, err = mh.movieRepo.GetNowShowingMovies(r.Context())
+		if err != nil {
+			http.Error(w, "error getting movies", http.StatusInternalServerError)
+			return
+		}
+		if err := mh.cache.Set("currentMovies", movies, time.Hour); err != nil {
+			log.Printf("GetMoviesWithProjections: failed to update cache: %v", err)
+		}
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(movies); err != nil {
-		log.Printf("GetMoviesWithProjections: failed to encode response: %v", err)
-	}
+
+	WriteResponseWithEncoder(w, movies, http.StatusOK)
 }
 
 func (mh *MovieHandler) GetFutureMovies(w http.ResponseWriter, r *http.Request) {
-	movies, err := mh.movieRepo.GetFutureMovies(r.Context())
-	if err != nil {
-		http.Error(w, "error getting movies", http.StatusInternalServerError)
-		return
+	var movies []domain.Movie
+	if err := mh.cache.Get("futureMovies", &movies); err != nil {
+		movies, err = mh.movieRepo.GetFutureMovies(r.Context())
+		if err != nil {
+			http.Error(w, "error getting movies", http.StatusInternalServerError)
+			return
+		}
+		if err := mh.cache.Set("futureMovies", movies, time.Hour); err != nil {
+			log.Printf("GetFutureMovies: failed to update cache: %v", err)
+		}
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(movies); err != nil {
-		log.Printf("GetFutureMovies: failed to encode response: %v", err)
-	}
+
+	WriteResponseWithEncoder(w, movies, http.StatusOK)
 }
 
 func (mh *MovieHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) {
@@ -156,14 +160,17 @@ func (mh *MovieHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "wrong format for movie update request", http.StatusBadRequest)
 		return
 	}
-	movie, err := mh.movieRepo.GetMovieByID(r.Context(), movieID)
-	if err != nil {
-		if errors.Is(err, database.ErrMovieNotFound) {
-			http.Error(w, "movie not found", http.StatusNotFound)
+	var movie *domain.Movie
+	if err := mh.cache.Get(id, &movie); err != nil {
+		movie, err = mh.movieRepo.GetMovieByID(r.Context(), movieID)
+		if err != nil {
+			if errors.Is(err, database.ErrMovieNotFound) {
+				http.Error(w, "movie not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "error finding movie", http.StatusInternalServerError)
 			return
 		}
-		http.Error(w, "error finding movie", http.StatusInternalServerError)
-		return
 	}
 	if updateReq.Description != nil {
 		if *updateReq.Description == "" {
@@ -219,12 +226,16 @@ func (mh *MovieHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error updating movie", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(movie); err != nil {
-		log.Printf("UpdateMovie: failed to encode response: %v", err)
+	if err := mh.cache.Set(id, movie, time.Hour); err != nil {
+		log.Printf("UpdateMovie: failed to update cache: %v", err)
 	}
-
+	if err := mh.cache.Delete("currentMovies"); err != nil {
+		log.Printf("UpdateMovie: failed to invalidate currentMovies cache: %v", err)
+	}
+	if err := mh.cache.Delete("futureMovies"); err != nil {
+		log.Printf("UpdateMovie: failed to invalidate futureMovies cache: %v", err)
+	}
+	WriteResponseWithEncoder(w, movie, http.StatusOK)
 }
 
 func (mh *MovieHandler) DeleteMovie(w http.ResponseWriter, r *http.Request) {
@@ -241,6 +252,15 @@ func (mh *MovieHandler) DeleteMovie(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Error(w, "error deleting movie", http.StatusInternalServerError)
 		return
+	}
+	if err := mh.cache.Delete(id); err != nil {
+		log.Printf("DeleteMovie: failed to invalidate movie cache: %v", err)
+	}
+	if err := mh.cache.Delete("currentMovies"); err != nil {
+		log.Printf("DeleteMovie: failed to invalidate currentMovies cache: %v", err)
+	}
+	if err := mh.cache.Delete("futureMovies"); err != nil {
+		log.Printf("DeleteMovie: failed to invalidate futureMovies cache: %v", err)
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
