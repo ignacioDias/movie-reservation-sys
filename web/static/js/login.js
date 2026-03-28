@@ -1,4 +1,4 @@
-import { isUserLoggedIn } from "./utils.js";
+import { isUserLoggedIn, getPasswordPolicyError } from "./utils.js";
 const $form = document.querySelector(".login-form");
 const $registerBtn = document.querySelector(".register-btn");
 const $emailInput = document.getElementById("email");
@@ -30,22 +30,7 @@ function clearFormFeedback() {
     $formFeedback.hidden = true;
 }
 
-function getPasswordPolicyError(password) {
-    if (password.length < 8 || password.length >= 32) {
-        return "Password must be between 8 and 31 characters.";
-    }
 
-    const hasUpper = /\p{Lu}/u.test(password);
-    const hasLower = /\p{Ll}/u.test(password);
-    const hasDigit = /\p{Nd}/u.test(password);
-    const hasSpecial = /[\p{P}\p{S}]/u.test(password);
-
-    if (!hasUpper || !hasLower || !hasDigit || !hasSpecial) {
-        return "Password must include uppercase, lowercase, number, and special character.";
-    }
-
-    return "";
-}
 
 function validateField($input, $errorContainer) {
     clearFieldError($input, $errorContainer);

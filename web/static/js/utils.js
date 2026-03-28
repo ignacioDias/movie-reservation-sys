@@ -59,3 +59,20 @@ export function renderComingSoonMovies($futureMovies, movies) {
 
     $futureMovies.appendChild(grid);
 }
+
+export function getPasswordPolicyError(password) {
+    if (password.length < 8 || password.length >= 32) {
+        return "Password must be between 8 and 31 characters.";
+    }
+
+    const hasUpper = /\p{Lu}/u.test(password);
+    const hasLower = /\p{Ll}/u.test(password);
+    const hasDigit = /\p{Nd}/u.test(password);
+    const hasSpecial = /[\p{P}\p{S}]/u.test(password);
+
+    if (!hasUpper || !hasLower || !hasDigit || !hasSpecial) {
+        return "Password must include uppercase, lowercase, number, and special character.";
+    }
+
+    return "";
+}
