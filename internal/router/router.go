@@ -39,6 +39,7 @@ func NewRouter(db *database.Database, cache *cache.Cache) *Router {
 }
 
 func (r *Router) SetupRoutes() *http.ServeMux {
+	r.mux.Handle("/", http.FileServer(http.Dir("web")))
 
 	//session
 	r.mux.HandleFunc("POST /api/v1/auth/register", r.rateLimit.RateLimit(r.userHandler.RegisterUser))

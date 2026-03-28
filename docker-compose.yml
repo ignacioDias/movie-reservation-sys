@@ -46,6 +46,8 @@ services:
       PORT: 8080
     ports:
       - "8080:8080"
+    volumes:
+      - ./web:/app/web
     depends_on:
       postgres:
         condition: service_healthy
