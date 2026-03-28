@@ -1,3 +1,4 @@
+import { isUserLoggedIn } from "./utils.js";
 const $form = document.querySelector(".login-form");
 const $registerBtn = document.querySelector(".register-btn")
 $form.addEventListener("submit", async function (event) {
@@ -30,4 +31,10 @@ $form.addEventListener("submit", async function (event) {
 
 $registerBtn.addEventListener("click", () => {
     window.location.href = "/register"
+})
+
+window.addEventListener('load', async () => {
+    if(await isUserLoggedIn()) {
+        window.location.href = "/"
+    }
 })

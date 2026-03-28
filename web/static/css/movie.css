@@ -372,3 +372,101 @@ body {
 .projection-time-btn:hover .projection-meta {
     opacity: 0.9;
 }
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 11, 0.82);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 28px;
+    height: 60px;
+}
+
+/* Push auth buttons to the right */
+.nav .not-logged,
+.nav .logged {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Shared nav button base */
+.nav button {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 7px 14px;
+    transition: color var(--transition), background var(--transition);
+    white-space: nowrap;
+}
+
+/* Primary nav links */
+.go-back-btn,
+.current-movies-btn,
+.soon-movies-btn {
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.go-back-btn:hover,
+.current-movies-btn:hover,
+.soon-movies-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Ghost secondary button */
+.login-btn,
+.profile-btn {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.login-btn:hover,
+.profile-btn:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Accent primary button */
+.signup-btn {
+    color: var(--bg);
+    background: var(--accent);
+    font-weight: 500;
+}
+
+.signup-btn:hover {
+    background: #d9bc84;
+}
+
+/* Logout — subtle destructive */
+.logout-btn {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.logout-btn:hover {
+    color: #e07070;
+    border-color: rgba(224, 112, 112, 0.35);
+    background: rgba(224, 112, 112, 0.06);
+}

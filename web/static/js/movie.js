@@ -1,6 +1,17 @@
+import { isUserLoggedIn } from "./utils.js";
+
 const $movieDetails = document.querySelector('.movie-details');
 const $movieError = document.querySelector('.movie-error');
 const $movieProjections = document.querySelector('.movie-projections');
+const $currentMoviesBtn = document.querySelector('.current-movies-btn');
+const $soonMoviesBtn = document.querySelector('.soon-movies-btn');
+const $signUpBtn = document.querySelector('.signup-btn');
+const $loginBtn = document.querySelector('.login-btn');
+const $profileBtn = document.querySelector('.profile-btn');
+const $logoutBtn = document.querySelector('.logout-btn');
+const $loggedDivBtns = document.querySelector('.logged')
+const $notLoggedDivBtns = document.querySelector('.not-logged')
+const $goBackBtn = document.querySelector('.go-back-btn')
 
 function getYoutubeEmbedUrl(trailerUrl) {
     if (!trailerUrl) return null;
@@ -211,8 +222,11 @@ function renderMovie(movie) {
 }
 
 window.addEventListener('load', async () => {
+    if (await isUserLoggedIn()) {
+        $loggedDivBtns.style.display = "block";
+        $notLoggedDivBtns.style.display = "none";
+    } 
     const movieId = window.location.pathname.split('/').pop();
-
     try {
         const response = await fetch(`/api/v1/movies/${movieId}`);
         if (!response.ok) {
@@ -226,3 +240,26 @@ window.addEventListener('load', async () => {
         $movieError.style.display = 'block';
     }
 });
+
+$currentMoviesBtn.addEventListener("click", () => {
+    window.location.href = "/movies/projecting";
+})
+$soonMoviesBtn.addEventListener("click", () => {
+    window.location.href = "/movies/soon";
+})
+$signUpBtn.addEventListener("click", () => {
+    window.location.href = "/signup";
+})
+$loginBtn.addEventListener("click", () => {
+    window.location.href = "/login";
+})
+$logoutBtn.addEventListener("click", async () => {
+    await logout();
+})
+$profileBtn.addEventListener("click", () => {
+    window.location.href = "/me";
+})
+
+$goBackBtn.addEventListener("click", () => {
+    window.location.href = "/";
+})
