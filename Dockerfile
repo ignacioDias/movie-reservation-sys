@@ -25,7 +25,9 @@ RUN apk --no-cache add ca-certificates
 
 # Copy binary from builder
 COPY --from=builder /app/cinemasys .
-COPY --from=builder /app/web ./web 
+COPY --from=builder /app/web ./web
+COPY --from=builder /app/assets ./assets
+
 # Expose port
 EXPOSE 8080
 

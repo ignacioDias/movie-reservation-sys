@@ -39,12 +39,18 @@ func NewRouter(db *database.Database, cache *cache.Cache) *Router {
 }
 
 func (r *Router) SetupRoutes() *http.ServeMux {
+	//front end routes (all in one repo for simplicity, and it's just educational project)
 	r.mux.Handle("/", http.FileServer(http.Dir("web")))
+	r.mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
 	r.mux.HandleFunc("GET /movies/{movie_id}", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/movie.html")
 	})
 	r.mux.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/login.html")
+	})
+	r.mux.HandleFunc("GET /register", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/register.html")
 	})
 	//session
 	r.mux.HandleFunc("POST /api/v1/auth/register", r.rateLimit.RateLimit(r.userHandler.RegisterUser))

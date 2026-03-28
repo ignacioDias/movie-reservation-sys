@@ -4,20 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="/static/css/register.css">
 </head>
 <body>
     <div class="Register">
-        <div class="profile-pictures">
-            <img src="/assets/avatars/batman.webp" alt="Batman avatar">
-            <img src="/assets/avatars/deniro.webp" alt="De Niro avatar">
-            <img src="/assets/avatars/dicaprio.webp" alt="DiCaprio avatar">
-            <img src="/assets/avatars/dune.webp" alt="Dune avatar">
-            <img src="/assets/avatars/joker.webp" alt="Joker avatar">
-            <img src="/assets/avatars/maverick.webp" alt="Maverick avatar">
-            <img src="/assets/avatars/samuel.webp" alt="Samuel avatar">
-            <img src="/assets/avatars/spiderman.webp" alt="Spiderman avatar">
-            <img src="/assets/avatars/travolta.webp" alt="Travolta avatar">
-        </div>
+        <form class="register-form" aria-labelledby="register-title" novalidate>
+            <h1 id="register-title" class="register-title">Welcome</h1>
+
+            <label>Select Avatar:</label>
+            <div class="profile-pictures">
+                <img src="/assets/avatars/batman.webp" alt="Batman avatar" data-avatar="/assets/avatars/batman.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/deniro.webp" alt="De Niro avatar" data-avatar="/assets/avatars/deniro.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/dicaprio.webp" alt="DiCaprio avatar" data-avatar="/assets/avatars/dicaprio.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/dune.webp" alt="Dune avatar" data-avatar="/assets/avatars/dune.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/joker.webp" alt="Joker avatar" data-avatar="/assets/avatars/joker.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/maverick.webp" alt="Maverick avatar" data-avatar="/assets/avatars/maverick.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/samuel.webp" alt="Samuel avatar" data-avatar="/assets/avatars/samuel.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/spiderman.webp" alt="Spiderman avatar" data-avatar="/assets/avatars/spiderman.webp" role="button" tabindex="0">
+                <img src="/assets/avatars/travolta.webp" alt="Travolta avatar" data-avatar="/assets/avatars/travolta.webp" role="button" tabindex="0">
+            </div>
+            <input type="hidden" id="profilePicture" name="profilePicture" value="">
+            <p id="avatar-error" class="field-error" aria-live="polite" hidden></p>
+
+            <p id="form-feedback" class="form-feedback" role="alert" aria-live="assertive" hidden></p>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" autocomplete="email" aria-describedby="email-error" required>
+            <p id="email-error" class="field-error" aria-live="polite" hidden></p>
+
+            <label for="documentNumber">Document Number:</label>
+            <input type="text" id="documentNumber" name="documentNumber" aria-describedby="documentNumber-error" required>
+            <p id="documentNumber-error" class="field-error" aria-live="polite" hidden></p>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" aria-describedby="password-error" required>
+            <p id="password-error" class="field-error" aria-live="polite" hidden></p>
+
+            <label for="passwordConfirm">Confirm Password:</label>
+            <input type="password" id="passwordConfirm" name="passwordConfirm" autocomplete="new-password" aria-describedby="passwordConfirm-error" required>
+            <p id="passwordConfirm-error" class="field-error" aria-live="polite" hidden></p>
+
+            <button type="submit">Register</button>
+            <button type="button" class="login-btn">Login</button>
+        </form>
     </div>
+    <script type="module" src="/static/js/register.js"></script>
 </body>
 </html>

@@ -96,7 +96,7 @@ $soonMoviesBtn.addEventListener("click", () => {
     window.location.href = "/movies/soon";
 })
 $signUpBtn.addEventListener("click", () => {
-    window.location.href = "/signup";
+    window.location.href = "/register";
 })
 $loginBtn.addEventListener("click", () => {
     window.location.href = "/login";
