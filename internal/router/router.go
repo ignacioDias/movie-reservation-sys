@@ -52,6 +52,9 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 	r.mux.HandleFunc("GET /register", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/register.html")
 	})
+	r.mux.HandleFunc("GET /me", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/profile.html")
+	})
 	//session
 	r.mux.HandleFunc("POST /api/v1/auth/register", r.rateLimit.RateLimit(r.userHandler.RegisterUser))
 	r.mux.HandleFunc("POST /api/v1/auth/login", r.rateLimit.RateLimit(r.userHandler.LoginUser))
@@ -96,7 +99,7 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 
 	//reservation
 	r.mux.HandleFunc("POST /api/v1/reservations", r.authenticationMw.AuthenticationMiddleware(r.reservationHandler.CreateReservation))
-	r.mux.HandleFunc("GET /api/v1/reservations", r.authenticationMw.AuthenticationMiddleware(r.reservationHandler.GetReservationsFromUser))
+	r.mux.HandleFunc("GET /api/v1/users/me/reservations", r.authenticationMw.AuthenticationMiddleware(r.reservationHandler.GetReservationsFromUser))
 
 	return r.mux
 }
