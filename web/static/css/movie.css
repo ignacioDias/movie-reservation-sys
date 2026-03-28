@@ -1,0 +1,374 @@
+/* ─────────────────────────────────────────
+   CINEMA — movie.css
+   Aesthetic: Luxury editorial dark
+   Fonts: Cormorant Garamond (display) + DM Sans (UI)
+───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg:           #0a0a0b;
+    --surface:      #111113;
+    --surface-2:    #18181c;
+    --border:       rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --text:         #e8e6e1;
+    --text-muted:   #7a7875;
+    --accent:       #c8a96e;
+    --accent-dim:   rgba(200, 169, 110, 0.12);
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-ui:      'DM Sans', system-ui, sans-serif;
+    --radius-sm:    6px;
+    --radius-md:    12px;
+    --radius-lg:    18px;
+    --transition:   220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+
+/* ── Page Layout ── */
+.movie-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 56px 28px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+}
+
+
+/* ── Error state ── */
+.movie-error {
+    color: #e07070;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    padding: 16px 20px;
+    border: 1px solid rgba(224, 112, 112, 0.2);
+    border-radius: var(--radius-md);
+    background: rgba(224, 112, 112, 0.05);
+}
+
+
+/* ── Movie Card (detail layout) ── */
+.movie-card {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 52px;
+    align-items: start;
+}
+
+
+/* ── Poster ── */
+.movie-media {
+    position: sticky;
+    top: 84px; /* clears nav height */
+}
+
+.movie-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    display: block;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ── Content ── */
+.movie-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 4px;
+}
+
+.movie-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    color: var(--text);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.movie-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 48px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.movie-metadata {
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+
+/* ── Genres ── */
+.movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+}
+
+.movie-genre {
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 10px;
+    border: 1px solid rgba(200, 169, 110, 0.3);
+    border-radius: 100px;
+    background: var(--accent-dim);
+}
+
+
+/* ── Description ── */
+.movie-description {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    line-height: 1.75;
+    max-width: 62ch;
+}
+
+
+/* ── Trailer ── */
+.movie-trailer {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.movie-trailer h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.movie-trailer h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.movie-trailer iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: #000;
+}
+
+
+/* ── Showtimes ── */
+.movie-projections {
+    border-top: 1px solid var(--border);
+    padding-top: 48px;
+}
+
+.projections-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    margin-bottom: 32px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.projections-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 48px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.projections-empty {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.projection-date-block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.projection-date-block:last-child {
+    border-bottom: none;
+}
+
+.projection-date {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.projection-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.projection-time-btn {
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 18px;
+    cursor: pointer;
+    transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+.projection-time-btn:hover {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .movie-card {
+        grid-template-columns: 220px 1fr;
+        gap: 36px;
+    }
+}
+
+@media (max-width: 680px) {
+    .movie-page {
+        padding: 32px 16px 60px;
+        gap: 48px;
+    }
+
+    .movie-card {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .movie-media {
+        position: static;
+    }
+
+    .movie-poster {
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    .movie-title {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .movie-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .movie-genres {
+        justify-content: center;
+    }
+
+    .movie-description {
+        text-align: center;
+        max-width: 100%;
+    }
+}
+
+
+/* ── Projection button internals ── */
+.projection-time-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.projection-time {
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+}
+
+.projection-meta {
+    font-size: 0.68rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.projection-time-btn:hover .projection-meta {
+    opacity: 0.9;
+}
