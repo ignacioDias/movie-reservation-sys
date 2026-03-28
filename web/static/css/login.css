@@ -1,0 +1,258 @@
+/* ─────────────────────────────────────────
+   CINEMA — login.css
+   Aesthetic: Luxury editorial dark
+   Fonts: Cormorant Garamond (display) + DM Sans (UI)
+───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg:           #0a0a0b;
+    --surface:      #111113;
+    --surface-2:    #18181c;
+    --border:       rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --text:         #e8e6e1;
+    --text-muted:   #7a7875;
+    --accent:       #c8a96e;
+    --accent-dim:   rgba(200, 169, 110, 0.12);
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-ui:      'DM Sans', system-ui, sans-serif;
+    --radius-sm:    6px;
+    --radius-md:    12px;
+    --radius-lg:    18px;
+    --transition:   220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+
+/* ── Login Container ── */
+.login {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+
+/* ── Login Form ── */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Form Title */
+.login-form::before {
+    content: 'Welcome Back';
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.login-form::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -1px;
+    width: 48px;
+    height: 1px;
+    background: var(--accent);
+}
+
+
+/* ── Labels ── */
+.login-form label {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: -12px;
+}
+
+
+/* ── Input Fields ── */
+.login-form input[type="email"],
+.login-form input[type="password"] {
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.login-form input[type="email"]:hover,
+.login-form input[type="password"]:hover {
+    border-color: var(--border-hover);
+}
+
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.login-form input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* ── Autofill Styling ── */
+.login-form input:-webkit-autofill,
+.login-form input:-webkit-autofill:hover,
+.login-form input:-webkit-autofill:focus,
+.login-form input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--surface-2) inset !important;
+    box-shadow: 0 0 0 30px var(--surface-2) inset !important;
+    -webkit-text-fill-color: var(--text) !important;
+}
+
+.login-form input:-webkit-autofill {
+    border-color: var(--border) !important;
+}
+
+.login-form input:-webkit-autofill:focus {
+    border-color: var(--accent) !important;
+    -webkit-box-shadow: 0 0 0 30px var(--surface-2) inset, 0 0 0 3px var(--accent-dim) !important;
+}
+
+
+/* ── Submit Button ── */
+.login-form button[type="submit"] {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px 24px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.login-form button[type="submit"]:hover {
+    background: #d9bc84;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(200, 169, 110, 0.25);
+}
+
+.login-form button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+
+/* ── Register Button ── */
+.register-btn {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    cursor: pointer;
+    width: 100%;
+    transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.register-btn:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+
+/* ── Divider ── */
+.login-form + .register-btn::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 28px;
+    position: relative;
+}
+
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    body {
+        padding: 16px;
+    }
+
+    .login-form {
+        padding: 32px 24px;
+    }
+
+    .login-form::before {
+        font-size: 1.6rem;
+    }
+
+    .login-form input[type="email"],
+    .login-form input[type="password"] {
+        padding: 10px 14px;
+    }
+
+    .login-form button[type="submit"],
+    .register-btn {
+        padding: 12px 20px;
+    }
+}

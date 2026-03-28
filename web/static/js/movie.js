@@ -162,7 +162,8 @@ function renderMovie(movie) {
     const title = document.createElement('h1');
     title.className = 'movie-title';
     title.textContent = movie.title;
-
+    document.title = movie.title;
+    
     const metadata = document.createElement('div');
     metadata.className = 'movie-metadata';
     metadata.textContent = `Release date: ${releaseDate}`;

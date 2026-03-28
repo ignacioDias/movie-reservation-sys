@@ -43,6 +43,9 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 	r.mux.HandleFunc("GET /movies/{movie_id}", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/movie.html")
 	})
+	r.mux.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/login.html")
+	})
 	//session
 	r.mux.HandleFunc("POST /api/v1/auth/register", r.rateLimit.RateLimit(r.userHandler.RegisterUser))
 	r.mux.HandleFunc("POST /api/v1/auth/login", r.rateLimit.RateLimit(r.userHandler.LoginUser))

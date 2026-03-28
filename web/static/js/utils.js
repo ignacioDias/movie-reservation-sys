@@ -15,7 +15,8 @@ export async function logout() {
         return
     }
     try {
-        await fetch("/api/v1/auth/logout", {method: "POST"})
+        await fetch("/api/v1/auth/logout", {method: "DELETE"})
+        window.location.reload();
     } catch (error) {
         console.error(error)
     }
