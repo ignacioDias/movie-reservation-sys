@@ -8,15 +8,20 @@
 </head>
 <body>
     <div class="login">
-        <form class="login-form">
-            <label for="nombre">Email:</label>
-            <input type="email" id="email" name="email" required>
+        <form class="login-form" aria-labelledby="login-title" novalidate>
+            <h1 id="login-title" class="login-title">Welcome Back</h1>
+            <p id="form-feedback" class="form-feedback" role="alert" aria-live="assertive" hidden></p>
 
-            <label for="nombre">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" autocomplete="email" aria-describedby="email-error" required>
+            <p id="email-error" class="field-error" aria-live="polite" hidden></p>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" aria-describedby="password-error" required>
+            <p id="password-error" class="field-error" aria-live="polite" hidden></p>
 
             <button type="submit">Accept</button>
-            <button class="register-btn">Register</button>
+            <button type="button" class="register-btn">Register</button>
         </form>
     </div>
     <script src="/static/js/login.js" type="module"></script>
