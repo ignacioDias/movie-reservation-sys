@@ -118,7 +118,7 @@ function renderProjections(projections) {
             timeBtn.append(timeSpan, metaSpan);
 
             timeBtn.addEventListener('click', () => {
-                window.location.href = `/projections/${projection.projectionId}`;
+                window.location.href = `/projections/id/${projection.projectionId}/reservation`;
             });
 
             timesRow.appendChild(timeBtn);
