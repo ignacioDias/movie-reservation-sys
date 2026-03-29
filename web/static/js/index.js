@@ -26,7 +26,7 @@ function createMovieCard(movie) {
     title.textContent = movie.title;
     card.style.cursor = "pointer";
     card.addEventListener("click", () => {
-        window.location.href = `/movies/${movie.movieId}`
+        window.location.href = `/movies/id/${movie.movieId}`
     })
     card.append(poster, title);
     return card;

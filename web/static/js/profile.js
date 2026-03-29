@@ -4,7 +4,6 @@ const $currentMoviesBtn = document.querySelector('.current-movies-btn');
 const $soonMoviesBtn = document.querySelector('.soon-movies-btn');
 const $signUpBtn = document.querySelector('.signup-btn');
 const $loginBtn = document.querySelector('.login-btn');
-const $profileBtn = document.querySelector('.profile-btn');
 const $logoutBtn = document.querySelector('.logout-btn');
 const $loggedDivBtns = document.querySelector('.logged')
 const $notLoggedDivBtns = document.querySelector('.not-logged')
@@ -115,9 +114,6 @@ $loginBtn.addEventListener("click", () => {
 })
 $logoutBtn.addEventListener("click", async () => {
     await logout();
-})
-$profileBtn.addEventListener("click", () => {
-    window.location.href = "/me";
 })
 
 $goBackBtn.addEventListener("click", () => {

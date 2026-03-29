@@ -131,7 +131,7 @@ function renderProjections(projections) {
 
 async function displayProjections(movie) {
     try {
-        const response = await fetch(`/api/v1/movies/${movie.movieId}/projections`);
+        const response = await fetch(`/api/v1/movies/id/${movie.movieId}/projections`);
         if (!response.ok) {
             throw new Error(`Error getting projections: ${response.status}`);
         }
@@ -228,7 +228,7 @@ window.addEventListener('load', async () => {
     } 
     const movieId = window.location.pathname.split('/').pop();
     try {
-        const response = await fetch(`/api/v1/movies/${movieId}`);
+        const response = await fetch(`/api/v1/movies/id/${movieId}`);
         if (!response.ok) {
             throw new Error(`Error getting movie: ${response.status}`);
         }

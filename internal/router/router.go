@@ -43,9 +43,6 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 	r.mux.Handle("/", http.FileServer(http.Dir("web")))
 	r.mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
-	r.mux.HandleFunc("GET /movies/{movie_id}", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/movie.html")
-	})
 	r.mux.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/login.html")
 	})
@@ -55,6 +52,12 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 	r.mux.HandleFunc("GET /me", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/profile.html")
 	})
+	r.mux.HandleFunc("GET /movies/soon", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/future_movies.html")
+	})
+	r.mux.HandleFunc("GET /movies/id/{movie_id}", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/movie.html")
+	})
 	//session
 	r.mux.HandleFunc("POST /api/v1/auth/register", r.rateLimit.RateLimit(r.userHandler.RegisterUser))
 	r.mux.HandleFunc("POST /api/v1/auth/login", r.rateLimit.RateLimit(r.userHandler.LoginUser))
@@ -62,6 +65,7 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 
 	//user
 	r.mux.HandleFunc("GET /api/v1/users/me", r.authenticationMw.AuthenticationMiddleware(r.userHandler.GetCurrentUser))
+	r.mux.HandleFunc("PUT /api/v1/users/me", r.authenticationMw.AuthenticationMiddleware(r.userHandler.UpdateUser))
 	r.mux.HandleFunc("PUT /api/v1/users/{user_id}/admin", r.authCheck((r.userHandler.MakeUserAdmin)))
 	r.mux.HandleFunc("DELETE /api/v1/users/me", r.authenticationMw.AuthenticationMiddleware(r.userHandler.DeleteMe))
 	r.mux.HandleFunc("DELETE /api/v1/users/{user_id}", r.authCheck(r.userHandler.DeleteUser))
@@ -85,12 +89,12 @@ func (r *Router) SetupRoutes() *http.ServeMux {
 	r.mux.HandleFunc("GET /api/v1/movies/available_now", r.movieHandler.GetMoviesWithProjections)
 
 	r.mux.HandleFunc("POST /api/v1/movies", r.authCheck(r.movieHandler.CreateMovie))
-	r.mux.HandleFunc("GET /api/v1/movies/{movie_id}", r.movieHandler.GetMovieByID)
-	r.mux.HandleFunc("PUT /api/v1/movies/{movie_id}", r.authCheck(r.movieHandler.UpdateMovie))
-	r.mux.HandleFunc("DELETE /api/v1/movies/{movie_id}", r.authCheck(r.movieHandler.DeleteMovie))
+	r.mux.HandleFunc("GET /api/v1/movies/id/{movie_id}", r.movieHandler.GetMovieByID)
+	r.mux.HandleFunc("PUT /api/v1/movies/id/{movie_id}", r.authCheck(r.movieHandler.UpdateMovie))
+	r.mux.HandleFunc("DELETE /api/v1/movies/id/{movie_id}", r.authCheck(r.movieHandler.DeleteMovie))
 
 	//projection
-	r.mux.HandleFunc("GET /api/v1/movies/{movie_id}/projections", r.projectionHandler.GetAllProjectionsPerMovie)
+	r.mux.HandleFunc("GET /api/v1/movies/id/{movie_id}/projections", r.projectionHandler.GetAllProjectionsPerMovie)
 
 	r.mux.HandleFunc("POST /api/v1/projections", r.authCheck(r.projectionHandler.CreateProjection))
 	r.mux.HandleFunc("GET /api/v1/projections/{projection_id}", r.authCheck(r.projectionHandler.GetProjection))

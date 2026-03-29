@@ -52,7 +52,7 @@ export function renderComingSoonMovies($futureMovies, movies) {
         card.style.cursor = "pointer";
 
         card.addEventListener("click", () => {
-            window.location.href = `/movies/${movie.movieId}`
+            window.location.href = `/movies/id/${movie.movieId}`
         })
         grid.appendChild(card);
     }

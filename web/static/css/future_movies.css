@@ -1,0 +1,306 @@
+/* ─────────────────────────────────────────
+   CINEMA — future_movies.css
+   Aesthetic: Luxury editorial dark
+   Fonts: Cormorant Garamond (display) + DM Sans (UI)
+───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg:           #0a0a0b;
+    --surface:      #111113;
+    --surface-2:    #18181c;
+    --border:       rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --text:         #e8e6e1;
+    --text-muted:   #7a7875;
+    --danger:       #e07070;
+    --danger-dim:   rgba(224, 112, 112, 0.12);
+    --accent:       #c8a96e;
+    --accent-dim:   rgba(200, 169, 110, 0.12);
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-ui:      'DM Sans', system-ui, sans-serif;
+    --radius-sm:    6px;
+    --radius-md:    12px;
+    --radius-lg:    18px;
+    --transition:   220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+
+/* ── Header / Nav ── */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 11, 0.82);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 28px;
+    height: 60px;
+}
+
+/* Push auth buttons to the right */
+.nav .not-logged,
+.nav .logged {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Shared nav button base */
+.nav button {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 7px 14px;
+    transition: color var(--transition), background var(--transition);
+    white-space: nowrap;
+}
+
+/* Primary nav links */
+.go-back-btn,
+.current-movies-btn {
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.go-back-btn:hover,
+.current-movies-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Ghost secondary button */
+.login-btn,
+.profile-btn {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.login-btn:hover,
+.profile-btn:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Accent primary button */
+.signup-btn {
+    color: var(--bg);
+    background: var(--accent);
+    font-weight: 500;
+}
+
+.signup-btn:hover {
+    background: #d9bc84;
+}
+
+/* Logout — subtle destructive */
+.logout-btn {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.logout-btn:hover {
+    color: #e07070;
+    border-color: rgba(224, 112, 112, 0.35);
+    background: rgba(224, 112, 112, 0.06);
+}
+
+
+/* ── Page H1 ── */
+h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    color: var(--text);
+    max-width: 1280px;
+    margin: 48px auto 0;
+    padding: 0 28px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    bottom: -1px;
+    width: 56px;
+    height: 1px;
+    background: var(--accent);
+}
+
+
+/* ── Movies section wrapper ── */
+.movies {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 28px 80px;
+}
+
+/* Inner h2 rendered by renderComingSoonMovies() */
+.movies h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    /* Hide the duplicate heading — the page h1 already serves this role */
+    display: none;
+}
+
+/* Empty state */
+.movies > p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+}
+
+
+/* ── Coming Soon Grid ── */
+.soon-movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+    gap: 20px;
+}
+
+.soon-movie-card {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.soon-movie-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.soon-movie-card img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    transition: filter var(--transition);
+}
+
+.soon-movie-card:hover img {
+    filter: brightness(0.9);
+}
+
+.soon-movie-title {
+    margin: 0;
+    padding: 12px 14px 14px;
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    transition: color var(--transition);
+}
+
+.soon-movie-card:hover .soon-movie-title {
+    color: var(--accent);
+}
+
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .nav {
+        padding: 0 16px;
+        gap: 2px;
+    }
+
+    h1 {
+        padding: 0 16px 16px;
+        margin-top: 32px;
+    }
+
+    h1::after {
+        left: 16px;
+    }
+
+    .movies {
+        padding: 28px 16px 60px;
+    }
+
+    .soon-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav button {
+        font-size: 0.72rem;
+        padding: 6px 10px;
+    }
+
+    h1 {
+        font-size: 1.9rem;
+    }
+
+    .soon-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+    }
+}
