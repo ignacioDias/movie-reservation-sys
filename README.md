@@ -181,14 +181,14 @@ Legend:
 - `GET /movies` (Public)
 - `GET /movies/soon` (Public)
 - `GET /movies/available_now` (Public)
-- `GET /movies/{movie_id}` (Public)
+- `GET /movies/id/{movie_id}` (Public)
 - `POST /movies` (Admin)
-- `PUT /movies/{movie_id}` (Admin)
-- `DELETE /movies/{movie_id}` (Admin)
+- `PUT /movies/id/{movie_id}` (Admin)
+- `DELETE /movies/id/{movie_id}` (Admin)
 
 ### Projections
 
-- `GET /movies/{movie_id}/projections` (Public)
+- `GET /movies/id/{movie_id}/projections` (Public)
 - `POST /projections` (Admin)
 - `GET /projections/{projection_id}` (Admin)
 - `PUT /projections/{projection_id}` (Admin)
